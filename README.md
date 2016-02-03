@@ -1,0 +1,2 @@
+# SaamaAzureTemplate
+SaamaAzureTemplate
