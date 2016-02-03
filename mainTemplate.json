@@ -172,7 +172,7 @@
     },
     "artifactsBaseUrl": {
       "type": "string",
-      "defaultValue": "https://raw.githubusercontent.com/fortinetclouddev/FortigateAzureTemplate/FortiWeb5.1.2",
+      "defaultValue": "https://github.com/mayurgupta/SaamaAzureTemplate.git",
       "metadata": {
         "description": "Base URL of the solution template gallery package",
         "artifactsBaseUrl": ""
