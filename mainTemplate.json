@@ -1,0 +1,250 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "adminUsername": {
+      "type": "string",
+      "metadata": {
+        "description": "User name for the Virtual Machine."
+      }
+    },
+    "vmSize": {
+      "type": "string",
+      "defaultValue": "Standard_D2",
+      "metadata": {
+        "description": "Virtual Machine size selection"
+      }
+    },
+    "vmName": {
+      "type": "string",
+      "metadata": {
+        "description": "Virtual Machine Name."
+      }
+    },
+    "virtualNetworkName": {
+      "type": "string",
+      "metadata": {
+        "description": "Virtual Network Name."
+      }
+    },
+    "publicIPAddressName": {
+      "type": "string",
+      "metadata": {
+        "description": "Public name for the IP Address."
+      }
+    },
+    "vmStorageAccountContainerName": {
+      "type": "string",
+      "metadata": {
+        "description": "Container Name of Storage Account."
+      }
+    },
+    "StorageAccountName": {
+      "type": "string",
+      "metadata": {
+        "description": "Unique DNS Name for the Storage Account where the Virtual Machine's disks will be placed."
+      }
+    },
+    "publicIPAddressType": {
+      "type": "string",
+      "defaultValue": "Dynamic",
+      "allowedValues": [
+        "Dynamic",
+        "Static"
+      ],
+      "metadata": {
+        "description": "Type of public IP address"
+      }
+    },
+    "StorageAccountType": {
+      "type": "string",
+      "defaultValue": "Standard_LRS",
+      "metadata": {
+        "description": "Storage Account Type."
+      }
+    },
+    "location": {
+      "type": "string",
+      "metadata": {
+        "description": "location"
+      }
+    },
+    "nicName": {
+      "type": "string",
+      "metadata": {
+        "description": "name of network interface card"
+      }
+    },
+    "subnetName": {
+      "type": "string",
+      "metadata": {
+        "description": "Subnet Name"
+      }
+    },
+    "addressPrefix": {
+      "type": "string",
+      "metadata": {
+        "description": "address prefix in CIDR format. Ex. 10.0.0.0/16"
+      }
+    },
+    "subnetPrefix": {
+      "type": "string",
+      "metadata": {
+        "description": "subnet prefix in CIDR format. Ex. 10.0.0.0/24"
+      }
+    },
+    "adminPassword": {
+      "type": "securestring",
+      "metadata": {
+        "description": "Password for the Virtual Machine."
+      }
+    },
+    "dnsLabelPrefix": {
+      "type": "string",
+      "metadata": {
+        "description": "Unique DNS Name for the Public IP used to access the Virtual Machine."
+      }
+    }
+  },
+  "variables": {
+    "storageAccountName": "[parameters('StorageAccountName')]",
+    "location": "[resourceGroup().location]",
+    "dataDisk1VhdName": "datadisk1--------------remove-------------",
+    "imagePublisher": "Saama",
+    "imageOffer": "fluidanalyticsengine",
+    "OSDiskName": "peadisk",
+    "nicName": "[parameters('nicName')]",
+    "addressPrefix": "[parameters('addressPrefix')]",
+    "subnetName": "[parameters('subnetName')]",
+    "subnetPrefix": "[parameters('subnetPrefix')]",
+    "StorageAccountType": "[parameters('StorageAccountType')]",
+    "publicIPAddressName": "[parameters('publicIPAddressName')]",
+    "publicIPAddressType": "[parameters('publicIPAddressType')]",
+    "vmStorageAccountContainerName": "[parameters('vmStorageAccountContainerName')]",
+    "vmName": "[parameters('vmName')]",
+    "vmSize": "[parameters('vmSize')]",
+    "virtualNetworkName": "[parameters('virtualNetworkName')]",
+    "vnetID": "[resourceId('Microsoft.Network/virtualNetworks',variables('virtualNetworkName'))]",
+    "subnetRef": "[concat(variables('vnetID'),'/subnets/',variables('subnetName'))]",
+    "apiVersion": "2015-06-15"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Storage/storageAccounts",
+      "name": "[variables('storageAccountName')]",
+      "apiVersion": "[variables('apiVersion')]",
+      "location": "[variables('location')]",
+      "properties": {
+        "accountType": "[variables('storageAccountType')]"
+      }
+    },
+    {
+      "apiVersion": "[variables('apiVersion')]",
+      "type": "Microsoft.Network/publicIPAddresses",
+      "name": "[variables('publicIPAddressName')]",
+      "location": "[variables('location')]",
+      "properties": {
+        "publicIPAllocationMethod": "[variables('publicIPAddressType')]",
+        "dnsSettings": {
+          "domainNameLabel": "[parameters('dnsLabelPrefix')]"
+        }
+      }
+    },
+    {
+      "apiVersion": "[variables('apiVersion')]",
+      "type": "Microsoft.Network/virtualNetworks",
+      "name": "[variables('virtualNetworkName')]",
+      "location": "[variables('location')]",
+      "properties": {
+        "addressSpace": {
+          "addressPrefixes": [
+            "[variables('addressPrefix')]"
+          ]
+        },
+        "subnets": [
+          {
+            "name": "[variables('subnetName')]",
+            "properties": {
+              "addressPrefix": "[variables('subnetPrefix')]"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "apiVersion": "[variables('apiVersion')]",
+      "type": "Microsoft.Network/networkInterfaces",
+      "name": "[variables('nicName')]",
+      "location": "[variables('location')]",
+      "dependsOn": [
+        "[concat('Microsoft.Network/publicIPAddresses/', variables('publicIPAddressName'))]",
+        "[concat('Microsoft.Network/virtualNetworks/', variables('virtualNetworkName'))]"
+      ],
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "privateIPAllocationMethod": "Dynamic",
+              "publicIPAddress": {
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses',variables('publicIPAddressName'))]"
+              },
+              "subnet": {
+                "id": "[variables('subnetRef')]"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "apiVersion": "[variables('apiVersion')]",
+      "type": "Microsoft.Compute/virtualMachines",
+      "name": "[variables('vmName')]",
+      "location": "[variables('location')]",
+      "dependsOn": [
+        "[concat('Microsoft.Storage/storageAccounts/', variables('storageAccountName'))]",
+        "[concat('Microsoft.Network/networkInterfaces/', variables('nicName'))]"
+      ],
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "[variables('vmSize')]"
+        },
+        "osProfile": {
+          "computerName": "[variables('vmName')]",
+          "adminUsername": "[parameters('adminUsername')]",
+          "adminPassword": "[parameters('adminPassword')]"
+        },
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "[variables('imagePublisher')]",
+            "offer": "[variables('imageOffer')]",
+            "sku": "PATIENTEXPERIENCE",
+            "version": "latest"
+          },
+          "osDisk": {
+            "name": "osdisk",
+            "vhd": {
+              "uri": "[concat('http://',variables('storageAccountName'),'.blob.core.windows.net/',variables('vmStorageAccountContainerName'),'/',variables('OSDiskName'),'.vhd')]"
+            },
+            "caching": "ReadWrite",
+            "createOption": "FromImage"
+          }
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces',variables('nicName'))]"
+            }
+          ]
+        },
+        "diagnosticsProfile": {
+          "bootDiagnostics": {
+            "enabled": "true",
+            "storageUri": "[concat('http://',variables('storageAccountName'),'.blob.core.windows.net')]"
+          }
+        }
+      }
+    }
+  ]
+}
