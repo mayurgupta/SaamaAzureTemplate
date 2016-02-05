@@ -110,7 +110,7 @@
     "storageAccountName": "[parameters('StorageAccountName')]",
     "location": "[resourceGroup().location]",
     "dataDisk1VhdName": "datadisk1--------------remove-------------",
-    "imagePublisher": "Saama",
+    "imagePublisher": "saama",
     "imageOffer": "fluidanalyticsengine",
     "OSDiskName": "peadisk",
     "nicName": "[parameters('nicName')]",
