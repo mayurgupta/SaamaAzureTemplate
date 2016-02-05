@@ -6,42 +6,42 @@
       {
         "name": "VMName",
         "type": "Microsoft.Common.TextBox",
-        "label": "FortiWeb VM Name",
-        "toolTip": "This is the name of the FortiWeb virtual appliance.",
+        "label": "VM name",
+        "toolTip": "The name of the new SaamaPEA VM.",
         "constraints": {
           "required": true,
-          "regex": "^[A-Za-z0-9]{1,15}$",
-          "validationMessage": "Only alphanumeric characters are allowed, and the value must be 1 to 15 characters."
+          "regex": "^[a-z0-9]{3,24}$",
+          "validationMessage": "Cluster names must be between 3 and 24 characters long, and can contain only numbers and lowercase letters."
         }
       },
       {
         "name": "adminUsername",
         "type": "Microsoft.Compute.UserNameTextBox",
-        "label": "FortiWeb Administrative Username",
-        "toolTip": "Admin username for the FortiWeb virtual appliance. Must not be 'admin'.",
-        "osPlatform": "Linux",
-        "constraints": {
-          "required": true
-        }
+        "label": "Username",
+        "toolTip": "Admin username for the virtual machines. Same Credientials is to SSH to the box.",
+        "osPlatform": "Linux"
       },
       {
-        "name": "passwordElement",
-        "type": "Microsoft.Common.PasswordBox",
+        "name": "SSHCredntials",
+        "type": "Microsoft.Compute.CredentialsCombo",
         "label": {
-          "password": "FortiWeb Password",
-          "confirmPassword": "Confirm Password"
+          "authenticationType": "Authentication type",
+          "password": "Password",
+          "confirmPassword": "Confirm password",
+          "sshPublicKey": "SSH public key"
         },
         "toolTip": {
-          "password": "Admin account password for the Virtual FortiWeb"
+          "authenticationType": "",
+          "password": "",
+          "sshPublicKey": ""
         },
         "constraints": {
-          "required": true,
-          "regex": "^(?:(?=.*[a-z])(?:(?=.*[A-Z])(?=.*[\\d\\W])|(?=.*\\W)(?=.*\\d))|(?=.*\\W)(?=.*[A-Z])(?=.*\\d)).{6,72}$",
-          "validationMessage": "The password must be between 6 and 72 characters long, and contain characters from at least 3 of the following groups: uppercase characters, lowercase characters, numbers, and special characters."
+          "required": true
         },
         "options": {
           "hideConfirmation": false
-        }
+        },
+        "osPlatform": "Linux"
       }
     ],
     "steps": [
@@ -63,10 +63,10 @@
             },
             "toolTip": {
               "virtualNetwork": "Virtual Network Name",
-              "subnets": "Subnets requied for the FortiWeb solution"
+              "subnets": "Subnets requied for the SaamaPEA solution"
             },
             "defaultValue": {
-              "name": "FortiWebProtectedVNet",
+              "name": "SaamaPEAwebProtectedVNet",
               "addressPrefixSize": "/16"
             },
             "constraints": {
@@ -77,18 +77,6 @@
                 "label": "Outside Subnet",
                 "defaultValue": {
                   "name": "PublicFacingSubnet",
-                  "addressPrefixSize": "/24"
-                },
-                "constraints": {
-                  "minAddressPrefixSize": "/24",
-                  "minAddressCount": 12,
-                  "requireContiguousAddresses": false
-                }
-              },
-              "subnet2": {
-                "label": "Inside Subnet",
-                "defaultValue": {
-                  "name": "FortiWebProtectedSubnet",
                   "addressPrefixSize": "/24"
                 },
                 "constraints": {
@@ -124,9 +112,9 @@
             },
             "osPlatform": "Linux",
             "imageReference": {
-              "publisher": "Fortinet",
-              "offer": "fortinet_fortiweb-vm_v5",
-              "sku": "fortinet_fg-vm"
+              "publisher": "saama",
+              "offer": "fluidanalyticsengine",
+              "sku": "PATIENTEXPERIENCE"
             },
             "count": "1"
           },
@@ -134,7 +122,7 @@
             "name": "storageAccount",
             "type": "Microsoft.Storage.StorageAccountSelector",
             "label": "Storage Account",
-            "toolTip": "Storage Account for the disk drive of the Virtual FortiWeb.",
+            "toolTip": "Storage Account for the disk drive of the Virtual SaamaPEA.",
             "defaultValue": {
               "type": "Standard_LRS"
             },
@@ -150,9 +138,9 @@
       },
       {
         "name": "IPConfig",
-        "label": "FortiWeb IP Address Assignments",
+        "label": "SaamaPEA IP Address Assignments",
         "subLabel": {
-          "preValidation": "Configure the Public IP and the IP Addresses for each NIC on the FortiWeb",
+          "preValidation": "Configure the Public IP and the IP Addresses for each NIC on the SaamaPEA",
           "postValidation": "Done"
         },
         "bladeTitle": "IP Assignment",
@@ -169,7 +157,7 @@
               "domainNameLabel": "DNS prefix to use for the public IP address (e.g. [dnsPrefix].region.cloudapp.azure.com)"
             },
             "defaultValue": {
-              "publicIpAddressName": "publicip-fortiweb",
+              "publicIpAddressName": "publicip-SaamaPEA",
               "domainNameLabel": "[basics('vmName')]"
             },
             "options": {
@@ -201,30 +189,6 @@
               ],
               "required": true
             }
-          },
-          {
-            "name": "fGateIP1",
-            "type": "Microsoft.Common.TextBox",
-            "label": "FortiWeb Outside Address",
-            "toolTip": "This is the IP address of the outside interface of the FortiWeb virtual appliance.",
-            "defaultValue": "[steps('StorageNetworkConfig').virtualNetwork.subnets.subnet1.startAddress]",
-            "constraints": {
-              "required": true,
-              "regex": "^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])$",
-              "validationMessage": "Must be a valid and available IPv4 address on the second subnet configured in the previous step."
-            }
-          },
-          {
-            "name": "fGateIP2",
-            "type": "Microsoft.Common.TextBox",
-            "label": "FortiWeb Inside Address",
-            "toolTip": "This is the IP address of the inside interface of the FortiWeb virtual appliance.",
-            "defaultValue": "[steps('StorageNetworkConfig').virtualNetwork.subnets.subnet2.startAddress]",
-            "constraints": {
-              "required": true,
-              "regex": "^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])$",
-              "validationMessage": "Must be a valid and available IPv4 address on the second subnet configured in the previous step."
-            }
           }
         ]
       }
@@ -239,8 +203,6 @@
       "uniqueDnsPrefixForPublicIP": "[steps('IPConfig').publicIpAddress.domainNameLabel]",
       "publicIPNewOrExistingOrNone": "[steps('IPConfig').publicIpAddress.newOrExistingOrNone]",
       "publicIPAddressResourceGroup": "[steps('IPConfig').publicIpAddress.resourceGroup]",
-      "fortiWebIP1": "[steps('IPConfig').fGateIP1]",
-      "fortiWebIP2": "[steps('IPConfig').fGateIP2]",
       "StorageAccountName": "[steps('StorageNetworkConfig').storageAccount.name]",
       "StorageAccountType": "[steps('StorageNetworkConfig').storageAccount.type]",
       "storageAccountNewOrExisting": "[steps('StorageNetworkConfig').storageAccount.newOrExisting]",
@@ -248,12 +210,10 @@
       "location": "[location()]",
       "vnetNewOrExisting": "[steps('StorageNetworkConfig').virtualNetwork.newOrExisting]",
       "virtualnetName": "[steps('StorageNetworkConfig').virtualNetwork.name]",
-      "virtualNetworkExistingRGName":  "[steps('StorageNetworkConfig').virtualNetwork.resourceGroup]",
-      "virtualNetworkAddressPrefix" : "[steps('StorageNetworkConfig').virtualNetwork.addressPrefix]",
-      "Subnet1Name" : "[steps('StorageNetworkConfig').virtualNetwork.subnets.subnet1.name]",
-      "Subnet1Prefix" : "[steps('StorageNetworkConfig').virtualNetwork.subnets.subnet1.addressPrefix]",
-      "Subnet2Name" : "[steps('StorageNetworkConfig').virtualNetwork.subnets.subnet2.name]",
-      "Subnet2Prefix": "[steps('StorageNetworkConfig').virtualNetwork.subnets.subnet2.addressPrefix]"
+      "virtualNetworkExistingRGName": "[steps('StorageNetworkConfig').virtualNetwork.resourceGroup]",
+      "virtualNetworkAddressPrefix": "[steps('StorageNetworkConfig').virtualNetwork.addressPrefix]",
+      "Subnet1Name": "[steps('StorageNetworkConfig').virtualNetwork.subnets.subnet1.name]",
+      "Subnet1Prefix": "[steps('StorageNetworkConfig').virtualNetwork.subnets.subnet1.addressPrefix]"
     }
   }
 }
