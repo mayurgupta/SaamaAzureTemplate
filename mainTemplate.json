@@ -21,76 +21,10 @@
         "description": "Virtual Machine Name."
       }
     },
-    "virtualNetworkName": {
-      "type": "string",
-      "metadata": {
-        "description": "Virtual Network Name."
-      }
-    },
-    "publicIPAddressName": {
-      "type": "string",
-      "metadata": {
-        "description": "Public name for the IP Address."
-      }
-    },
-    "vmStorageAccountContainerName": {
-      "type": "string",
-      "metadata": {
-        "description": "Container Name of Storage Account."
-      }
-    },
-    "StorageAccountName": {
-      "type": "string",
-      "metadata": {
-        "description": "Unique DNS Name for the Storage Account where the Virtual Machine's disks will be placed."
-      }
-    },
-    "publicIPAddressType": {
-      "type": "string",
-      "defaultValue": "Dynamic",
-      "allowedValues": [
-        "Dynamic",
-        "Static"
-      ],
-      "metadata": {
-        "description": "Type of public IP address"
-      }
-    },
-    "StorageAccountType": {
-      "type": "string",
-      "defaultValue": "Standard_LRS",
-      "metadata": {
-        "description": "Storage Account Type."
-      }
-    },
     "location": {
       "type": "string",
       "metadata": {
         "description": "location"
-      }
-    },
-    "nicName": {
-      "type": "string",
-      "metadata": {
-        "description": "name of network interface card"
-      }
-    },
-    "subnetName": {
-      "type": "string",
-      "metadata": {
-        "description": "Subnet Name"
-      }
-    },
-    "addressPrefix": {
-      "type": "string",
-      "metadata": {
-        "description": "address prefix in CIDR format. Ex. 10.0.0.0/16"
-      }
-    },
-    "subnetPrefix": {
-      "type": "string",
-      "metadata": {
-        "description": "subnet prefix in CIDR format. Ex. 10.0.0.0/24"
       }
     },
     "adminPassword": {
@@ -107,23 +41,22 @@
     }
   },
   "variables": {
-    "storageAccountName": "[parameters('StorageAccountName')]",
+    "storageAccountName": "[concat('sa',parameters('vmName'))]",
     "location": "[resourceGroup().location]",
-    "dataDisk1VhdName": "datadisk1--------------remove-------------",
     "imagePublisher": "saama",
     "imageOffer": "fluidanalyticsengine",
     "OSDiskName": "peadisk",
-    "nicName": "[parameters('nicName')]",
-    "addressPrefix": "[parameters('addressPrefix')]",
-    "subnetName": "[parameters('subnetName')]",
-    "subnetPrefix": "[parameters('subnetPrefix')]",
-    "StorageAccountType": "[parameters('StorageAccountType')]",
-    "publicIPAddressName": "[parameters('publicIPAddressName')]",
-    "publicIPAddressType": "[parameters('publicIPAddressType')]",
-    "vmStorageAccountContainerName": "[parameters('vmStorageAccountContainerName')]",
+    "nicName": "[concat('peanic',parameters('vmName'))]",
+    "addressPrefix": "10.0.0.0/16",
+    "subnetName": "[concat('sbnt',parameters('vmName'))]",
+    "subnetPrefix": "10.0.0.0/24",
+    "StorageAccountType": "Standard_LRS",
+    "publicIPAddressName": "[concat('peapip',parameters('vmName'))]",
+    "publicIPAddressType": "Dynamic",
+    "vmStorageAccountContainerName": "[concat('peacontainer',parameters('vmName'))]",
     "vmName": "[parameters('vmName')]",
     "vmSize": "[parameters('vmSize')]",
-    "virtualNetworkName": "[parameters('virtualNetworkName')]",
+    "virtualNetworkName": "[concat('peavn',parameters('vmName'))]",
     "vnetID": "[resourceId('Microsoft.Network/virtualNetworks',variables('virtualNetworkName'))]",
     "subnetRef": "[concat(variables('vnetID'),'/subnets/',variables('subnetName'))]",
     "apiVersion": "2015-06-15"
@@ -202,6 +135,11 @@
       "type": "Microsoft.Compute/virtualMachines",
       "name": "[variables('vmName')]",
       "location": "[variables('location')]",
+      "plan": {
+        "name": "PATIENTEXPERIENCE",
+        "publisher": "saama",
+        "product": "[variables('imageOffer')]"
+      },
       "dependsOn": [
         "[concat('Microsoft.Storage/storageAccounts/', variables('storageAccountName'))]",
         "[concat('Microsoft.Network/networkInterfaces/', variables('nicName'))]"
