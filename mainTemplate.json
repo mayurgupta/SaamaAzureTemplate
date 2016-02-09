@@ -136,7 +136,7 @@
       "name": "[variables('vmName')]",
       "location": "[variables('location')]",
       "plan": {
-        "name": "PATIENTEXPERIENCE",
+        "name": "patientexperience",
         "publisher": "saama",
         "product": "[variables('imageOffer')]"
       },
@@ -157,7 +157,7 @@
           "imageReference": {
             "publisher": "[variables('imagePublisher')]",
             "offer": "[variables('imageOffer')]",
-            "sku": "PATIENTEXPERIENCE",
+            "sku": "patientexperience",
             "version": "latest"
           },
           "osDisk": {
