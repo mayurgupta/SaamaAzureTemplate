@@ -2,10 +2,35 @@
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
+      "vmName": {
+      "type": "string",
+      "metadata": {
+        "description": "Virtual Machine Name."
+      }
+    },
     "adminUsername": {
       "type": "string",
       "metadata": {
         "description": "User name for the Virtual Machine."
+      }
+    },
+    "adminPassword": {
+      "type": "securestring",
+      "metadata": {
+        "description": "Password for the Virtual Machine."
+      }
+    },
+    
+    "subnetName": {
+      "type": "string",
+      "metadata": {
+        "description": "Subnet Name"
+      }
+    },
+    "subnetPrefix": {
+      "type": "string",
+      "metadata": {
+        "description": "subnet prefix in CIDR format. Ex. 10.0.0.0/24"
       }
     },
     "vmSize": {
@@ -15,22 +40,40 @@
         "description": "Virtual Machine size selection"
       }
     },
-    "vmName": {
+    "storageAccountName": {
       "type": "string",
       "metadata": {
-        "description": "Virtual Machine Name."
+        "description": "Unique DNS Name for the Storage Account where the Virtual Machine's disks will be placed."
+      }
+    },
+    "storageAccountType": {
+      "type": "string",
+      "defaultValue": "Standard_LRS",
+      "metadata": {
+        "description": "Storage Account Type."
+      }
+    },
+    "publicIPAddressName": {
+      "type": "string",
+      "metadata": {
+        "description": "Public name for the IP Address."
+      }
+    },
+    "publicIPAddressType": {
+      "type": "string",
+      "defaultValue": "Dynamic",
+      "allowedValues": [
+        "Dynamic",
+        "Static"
+      ],
+      "metadata": {
+        "description": "Type of public IP address"
       }
     },
     "location": {
       "type": "string",
       "metadata": {
         "description": "location"
-      }
-    },
-    "adminPassword": {
-      "type": "securestring",
-      "metadata": {
-        "description": "Password for the Virtual Machine."
       }
     },
     "dnsLabelPrefix": {
@@ -41,18 +84,18 @@
     }
   },
   "variables": {
-    "storageAccountName": "[concat('sa',parameters('vmName'))]",
+    "storageAccountName": "[parameters('storageAccountName')]",
     "location": "[resourceGroup().location]",
     "imagePublisher": "saama",
     "imageOffer": "fluidanalyticsengine",
     "OSDiskName": "peadisk",
     "nicName": "[concat('peanic',parameters('vmName'))]",
     "addressPrefix": "10.0.0.0/16",
-    "subnetName": "[concat('sbnt',parameters('vmName'))]",
-    "subnetPrefix": "10.0.0.0/24",
-    "StorageAccountType": "Standard_LRS",
-    "publicIPAddressName": "[concat('peapip',parameters('vmName'))]",
-    "publicIPAddressType": "Dynamic",
+    "subnetName": "[parameters('subnetName')]",
+    "subnetPrefix": "[parameters('subnetPrefix')]",
+    "StorageAccountType": "[parameters('storageAccountType')]",
+    "publicIPAddressName": "[parameters('publicIPAddressName')]",
+    "publicIPAddressType": "[parameters('publicIPAddressType')]",
     "vmStorageAccountContainerName": "[concat('peacontainer',parameters('vmName'))]",
     "vmName": "[parameters('vmName')]",
     "vmSize": "[parameters('vmSize')]",

@@ -77,9 +77,9 @@
   },
   "subnets": {
               "subnet1": {
-                "label": "Outside Subnet",
+                "label": "Subnet",
                 "defaultValue": {
-                  "name": "PublicFacingSubnet",
+                  "name": "Subnet",
                   "addressPrefixSize": "/24"
                 },
                 "constraints": {
@@ -205,6 +205,8 @@
       "adminUsername": "[basics('adminUsername')]",
       "adminPassword": "[basics('passwordElement')]",
       "virtualNetName": "[steps('StorageNetworkConfig').virtualNetwork.name]",
+      "subnetName": "[steps('StorageNetworkConfig').virtualNetwork.subnets.subnet1.name]",
+      "subnetPrefix": "[steps('StorageNetworkConfig').virtualNetwork.subnets.subnet1.addressPrefix]",
       "virtualNetworkAddressPrefix": "[steps('StorageNetworkConfig').virtualNetwork.addressPrefix]",
       "vmSize": "[steps('StorageNetworkConfig').vmSize]",
       "storageAccountName": "[steps('StorageNetworkConfig').storageAccount.name]",
