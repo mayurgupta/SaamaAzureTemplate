@@ -74,7 +74,21 @@
             },
              "constraints": {
     "minAddressPrefixSize": "/16"
-  }
+  },
+  "subnets": {
+              "subnet1": {
+                "label": "Outside Subnet",
+                "defaultValue": {
+                  "name": "PublicFacingSubnet",
+                  "addressPrefixSize": "/24"
+                },
+                "constraints": {
+                  "minAddressPrefixSize": "/24",
+                  "minAddressCount": 12,
+                  "requireContiguousAddresses": false
+                }
+              }
+            }
           },
           {
             "name": "vmSize",
