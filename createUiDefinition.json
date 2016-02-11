@@ -22,7 +22,7 @@
         "osPlatform": "Linux"
       },
       {
-        "name": "SSHCredntials",
+        "name": "passwordElement",
         "type": "Microsoft.Compute.CredentialsCombo",
         "label": {
           "authenticationType": "Authentication type",
@@ -71,6 +71,9 @@
             },
             "constraints": {
               "minAddressPrefixSize": "/16"
+            },
+            "options": {
+              "hideExisting": true
             },
             "subnets": {
               "subnet1": {
@@ -132,6 +135,9 @@
                 "Standard_GRS"
               ],
               "required": true
+            },
+            "options": {
+              "hideExisting": true
             }
           }
         ]
@@ -162,7 +168,8 @@
             },
             "options": {
               "hideNone": false,
-              "hideDomainNameLabel": false
+              "hideDomainNameLabel": false,
+              "hideExisting": true
             },
             "constraints": {
               "required": {
@@ -197,23 +204,17 @@
       "vmName": "[basics('VMName')]",
       "adminUsername": "[basics('adminUsername')]",
       "adminPassword": "[basics('passwordElement')]",
-      "VirtualMachineSize": "[steps('StorageNetworkConfig').vmSize]",
+      "subnet1Name": "[steps('StorageNetworkConfig').virtualNetwork.subnets.subnet1.name]",
+      "subnet1Prefix": "[steps('StorageNetworkConfig').virtualNetwork.subnets.subnet1.addressPrefix]",
+      "virtualNetName": "[steps('StorageNetworkConfig').virtualNetwork.name]",
+      "virtualNetworkAddressPrefix": "[steps('StorageNetworkConfig').virtualNetwork.addressPrefix]",
+      "virtualMachineSize": "[steps('StorageNetworkConfig').vmSize]",
+      "storageAccountName": "[steps('StorageNetworkConfig').storageAccount.name]",
+      "storageAccountType": "[steps('StorageNetworkConfig').storageAccount.type]",
       "publicIPAddressName": "[steps('IPConfig').publicIpAddress.name]",
       "publicIPAddressType": "[steps('IPConfig').publicIPAddressTypeElement]",
       "uniqueDnsPrefixForPublicIP": "[steps('IPConfig').publicIpAddress.domainNameLabel]",
-      "publicIPNewOrExistingOrNone": "[steps('IPConfig').publicIpAddress.newOrExistingOrNone]",
-      "publicIPAddressResourceGroup": "[steps('IPConfig').publicIpAddress.resourceGroup]",
-      "StorageAccountName": "[steps('StorageNetworkConfig').storageAccount.name]",
-      "StorageAccountType": "[steps('StorageNetworkConfig').storageAccount.type]",
-      "storageAccountNewOrExisting": "[steps('StorageNetworkConfig').storageAccount.newOrExisting]",
-      "storageAccountExistingRG": "[steps('StorageNetworkConfig').storageAccount.resourceGroup]",
-      "location": "[location()]",
-      "vnetNewOrExisting": "[steps('StorageNetworkConfig').virtualNetwork.newOrExisting]",
-      "virtualnetName": "[steps('StorageNetworkConfig').virtualNetwork.name]",
-      "virtualNetworkExistingRGName": "[steps('StorageNetworkConfig').virtualNetwork.resourceGroup]",
-      "virtualNetworkAddressPrefix": "[steps('StorageNetworkConfig').virtualNetwork.addressPrefix]",
-      "Subnet1Name": "[steps('StorageNetworkConfig').virtualNetwork.subnets.subnet1.name]",
-      "Subnet1Prefix": "[steps('StorageNetworkConfig').virtualNetwork.subnets.subnet1.addressPrefix]"
+      "location": "[location()]"
     }
   }
 }
