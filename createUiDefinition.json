@@ -69,25 +69,8 @@
               "name": "SaamaPEAwebProtectedVNet",
               "addressPrefixSize": "/16"
             },
-            "constraints": {
-              "minAddressPrefixSize": "/16"
-            },
             "options": {
               "hideExisting": true
-            },
-            "subnets": {
-              "subnet1": {
-                "label": "Outside Subnet",
-                "defaultValue": {
-                  "name": "PublicFacingSubnet",
-                  "addressPrefixSize": "/24"
-                },
-                "constraints": {
-                  "minAddressPrefixSize": "/24",
-                  "minAddressCount": 12,
-                  "requireContiguousAddresses": false
-                }
-              }
             }
           },
           {
@@ -204,16 +187,14 @@
       "vmName": "[basics('VMName')]",
       "adminUsername": "[basics('adminUsername')]",
       "adminPassword": "[basics('passwordElement')]",
-      "subnet1Name": "[steps('StorageNetworkConfig').virtualNetwork.subnets.subnet1.name]",
-      "subnet1Prefix": "[steps('StorageNetworkConfig').virtualNetwork.subnets.subnet1.addressPrefix]",
       "virtualNetName": "[steps('StorageNetworkConfig').virtualNetwork.name]",
       "virtualNetworkAddressPrefix": "[steps('StorageNetworkConfig').virtualNetwork.addressPrefix]",
-      "virtualMachineSize": "[steps('StorageNetworkConfig').vmSize]",
+      "vmSize": "[steps('StorageNetworkConfig').vmSize]",
       "storageAccountName": "[steps('StorageNetworkConfig').storageAccount.name]",
       "storageAccountType": "[steps('StorageNetworkConfig').storageAccount.type]",
       "publicIPAddressName": "[steps('IPConfig').publicIpAddress.name]",
       "publicIPAddressType": "[steps('IPConfig').publicIPAddressTypeElement]",
-      "uniqueDnsPrefixForPublicIP": "[steps('IPConfig').publicIpAddress.domainNameLabel]",
+      "dnsLabelPrefix": "[steps('IPConfig').publicIpAddress.domainNameLabel]",
       "location": "[location()]"
     }
   }
