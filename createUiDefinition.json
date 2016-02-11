@@ -71,7 +71,10 @@
             },
             "options": {
               "hideExisting": true
-            }
+            },
+             "constraints": {
+    "minAddressPrefixSize": "/16"
+  }
           },
           {
             "name": "vmSize",
