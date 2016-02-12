@@ -20,7 +20,12 @@
         "description": "Password for the Virtual Machine."
       }
     },
-    
+    "virtualNetworkName": {
+      "type": "string",
+      "metadata": {
+        "description": "Virtual Network Name."
+      }
+    },
     "subnetName": {
       "type": "string",
       "metadata": {
@@ -31,6 +36,12 @@
       "type": "string",
       "metadata": {
         "description": "subnet prefix in CIDR format. Ex. 10.0.0.0/24"
+      }
+    },
+    "addressPrefix": {
+      "type": "string",
+      "metadata": {
+        "description": "address prefix in CIDR format. Ex. 10.0.0.0/16"
       }
     },
     "vmSize": {
@@ -90,7 +101,7 @@
     "imageOffer": "fluidanalyticsengine",
     "OSDiskName": "peadisk",
     "nicName": "[concat('peanic',parameters('vmName'))]",
-    "addressPrefix": "10.0.0.0/16",
+    "addressPrefix": "[parameters('addressPrefix')]",
     "subnetName": "[parameters('subnetName')]",
     "subnetPrefix": "[parameters('subnetPrefix')]",
     "StorageAccountType": "[parameters('storageAccountType')]",
@@ -99,7 +110,7 @@
     "vmStorageAccountContainerName": "[concat('peacontainer',parameters('vmName'))]",
     "vmName": "[parameters('vmName')]",
     "vmSize": "[parameters('vmSize')]",
-    "virtualNetworkName": "[concat('peavn',parameters('vmName'))]",
+    "virtualNetworkName": "[parameters('virtualNetworkName')]",
     "vnetID": "[resourceId('Microsoft.Network/virtualNetworks',variables('virtualNetworkName'))]",
     "subnetRef": "[concat(variables('vnetID'),'/subnets/',variables('subnetName'))]",
     "apiVersion": "2015-06-15"
