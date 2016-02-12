@@ -19,27 +19,29 @@
         "type": "Microsoft.Compute.UserNameTextBox",
         "label": "Username",
         "toolTip": "Admin username for the virtual machines. Same Credientials is to SSH to the box.",
-        "osPlatform": "Linux"
+        "osPlatform": "Linux",
+        "constraints": {
+                    "required": true,
+                    "validationMessage": "Valid username is required"
+                  }
       },
       {
-        "name": "passwordElement",
+        "name": "sshPublicKey",
         "type": "Microsoft.Compute.CredentialsCombo",
         "label": {
-          "authenticationType": "Authentication type",
-          "password": "Password",
-          "confirmPassword": "Confirm password",
-          "sshPublicKey": "SSH public key"
+            "authenticationType": "Authentication type",
+            "sshPublicKey": "SSH public key"
         },
         "toolTip": {
-          "authenticationType": "",
-          "password": "",
-          "sshPublicKey": ""
+            "authenticationType": "",
+            "sshPublicKey": "OpenSSH public key can be generated with tools like ssh-keygen on Linux or OS X and will look like 'ssh-rsa AAAAB3...'"
         },
         "constraints": {
-          "required": true
+            "required": true
         },
         "options": {
-          "hideConfirmation": false
+            "hideConfirmation": false,
+            "hidePassword": true
         },
         "osPlatform": "Linux"
       }
@@ -67,30 +69,30 @@
             },
             "defaultValue": {
               "name": "SaamaPEAwebProtectedVNet",
-              "addressPrefixSize": "/16"
+              "addressPrefixSize": "/24"
             },
             "options": {
               "hideExisting": true
             },
-             "constraints": {
-    "minAddressPrefixSize": "/16"
-  },
-  "subnets": {
-              "subnet1": {
-                "label": "Subnet",
-                "defaultValue": {
-                  "name": "Subnet",
-                  "addressPrefixSize": "/24"
-                },
-                "constraints": {
-                  "minAddressPrefixSize": "/24",
-                  "minAddressCount": 12,
-                  "requireContiguousAddresses": false
-                }
-              }
-            }
-          },
-          {
+            "constraints": {
+                "minAddressPrefixSize": "/24"
+            },
+            "subnets": {
+                   "subnet1": {
+                            "label": "Subnet",
+                            "defaultValue": {
+                            "name": "Subnet",
+                            "addressPrefixSize": "/24"
+                            },
+                            "constraints": {
+                            "minAddressPrefixSize": "/24",
+                            "minAddressCount": 1,
+                            "requireContiguousAddresses": false
+                            }
+                        }
+                      }
+                    },
+            {
             "name": "vmSize",
             "type": "Microsoft.Compute.SizeSelector",
             "label": "Virtual machine size",
@@ -203,11 +205,12 @@
     "outputs": {
       "vmName": "[basics('VMName')]",
       "adminUsername": "[basics('adminUsername')]",
+      "sshKeyData": "[basics('sshPublicKey').sshPublicKey]",
       "adminPassword": "[basics('passwordElement')]",
       "virtualNetworkName": "[steps('StorageNetworkConfig').virtualNetwork.name]",
+      "addressPrefix": "[steps('StorageNetworkConfig').virtualNetwork.addressPrefix]",
       "subnetName": "[steps('StorageNetworkConfig').virtualNetwork.subnets.subnet1.name]",
       "subnetPrefix": "[steps('StorageNetworkConfig').virtualNetwork.subnets.subnet1.addressPrefix]",
-      "addressPrefix": "[steps('StorageNetworkConfig').virtualNetwork.addressPrefix]",
       "vmSize": "[steps('StorageNetworkConfig').vmSize]",
       "storageAccountName": "[steps('StorageNetworkConfig').storageAccount.name]",
       "storageAccountType": "[steps('StorageNetworkConfig').storageAccount.type]",
